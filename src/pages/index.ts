@@ -1,0 +1,6 @@
+// Page exports for cleaner imports
+export { LoginPage } from './LoginPage/LoginPage';
+export { RegisterPage } from './RegisterPage/RegisterPage';
+export { HotelSearchPage } from './HotelSearchPage/HotelSearchPage';
+export { BookingPage } from './BookingPage/BookingPage';
+export { MyReservationsPage } from './MyReservationsPage/MyReservationsPage';

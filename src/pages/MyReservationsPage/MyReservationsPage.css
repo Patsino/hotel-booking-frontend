@@ -1,0 +1,153 @@
+.reservations-page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, #f9fafb 0%, #e5e7eb 100%);
+  padding: 2rem 1rem;
+}
+
+.reservations-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.reservations-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.reservations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.no-reservations {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.search-link {
+  display: block;
+  text-align: center;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.search-link:hover {
+  text-decoration: underline;
+}
+
+.reservations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.reservation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reservation-id {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-confirmed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-completed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.reservation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-item.total-price {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e5e7eb;
+  font-size: 1.125rem;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.reservation-actions {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-notice {
+  color: #92400e;
+  background-color: #fef3c7;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .reservations-grid {
+    grid-template-columns: 1fr;
+  }
+}
