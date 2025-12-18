@@ -89,14 +89,14 @@
   color: #92400e;
 }
 
-.status-cancelled {
-  background-color: #fee2e2;
-  color: #991b1b;
+.status-held {
+  background-color: #fed7aa;
+  color: #9a3412;
 }
 
-.status-completed {
-  background-color: #dbeafe;
-  color: #1e40af;
+.status-canceled {
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .reservation-details {
@@ -144,6 +144,40 @@
   text-align: center;
   font-size: 0.875rem;
   margin: 0;
+}
+
+.payment-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.payment-succeeded {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.payment-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.payment-failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.payment-refunded {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.refund-amount {
+  margin-left: 0.5rem;
+  color: #3730a3;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {

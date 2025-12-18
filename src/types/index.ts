@@ -85,8 +85,8 @@ export interface Reservation {
   endDate: string;
   guestsCount: number;
   guestsNames: string;
-  status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
-  cancellationStatus: 'None' | 'Requested' | 'Approved' | 'Rejected';
+  status: 'Pending' | 'Held' | 'Confirmed' | 'Canceled';
+  cancellationStatus: 'None' | 'Requested' | 'AutoCanceled' | 'AdminApproved' | 'AdminRejected';
   cancellationReason: string | null;
   cancellationRequestedAt: string | null;
   createdAt: string;
@@ -99,6 +99,7 @@ export interface Payment {
   amount: number;
   currency: string;
   status: 'Pending' | 'Succeeded' | 'Failed' | 'Refunded';
+  amountRefunded?: number;
   paidAt: string | null;
   createdAt: string;
 }

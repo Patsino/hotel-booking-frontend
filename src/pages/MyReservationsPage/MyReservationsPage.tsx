@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { reservationService } from '../../services/reservationService';
+import { paymentService } from '../../services/paymentService';
 import { getErrorMessage } from '../../services/api';
-import type { Reservation } from '../../types';
+import type { Reservation, Payment } from '../../types';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Loading } from '../../components/Loading/Loading';
@@ -15,8 +16,11 @@ export const MyReservationsPage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [payments, setPayments] = useState<Record<number, Payment>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   const fetchReservations = async () => {
     console.log('Fetching reservations...');
@@ -25,6 +29,16 @@ export const MyReservationsPage: React.FC = () => {
       const data = await reservationService.getMyReservations();
       console.log('Reservations fetched:', data);
       setReservations(data);
+
+      // Fetch payment status for each reservation
+      const paymentData: Record<number, Payment> = {};
+      for (const reservation of data) {
+        const payment = await paymentService.getPaymentByReservation(reservation.id);
+        if (payment) {
+          paymentData[reservation.id] = payment;
+        }
+      }
+      setPayments(paymentData);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -54,6 +68,27 @@ export const MyReservationsPage: React.FC = () => {
     });
   };
 
+  const handleCancelReservation = async (reservationId: number) => {
+    if (!confirm('Are you sure you want to cancel this reservation? If approved, a refund will be processed.')) {
+      return;
+    }
+
+    const reason = prompt('Please provide a reason for cancellation (optional):');
+    
+    setCancellingId(reservationId);
+    setError(null);
+    
+    try {
+      await reservationService.cancelReservation(reservationId, reason || 'User requested cancellation');
+      setSuccess('Cancellation request submitted successfully. You will be notified once processed.');
+      await fetchReservations();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="reservations-page">
@@ -72,18 +107,34 @@ export const MyReservationsPage: React.FC = () => {
         return 'status-confirmed';
       case 'Pending':
         return 'status-pending';
-      case 'Cancelled':
-        return 'status-cancelled';
-      case 'Completed':
-        return 'status-completed';
+      case 'Held':
+        return 'status-held';
+      case 'Canceled':
+        return 'status-canceled';
       default:
         return '';
+    }
+  };
+
+  const getPaymentStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Succeeded':
+        return <span className="payment-status payment-succeeded">✓ Paid</span>;
+      case 'Pending':
+        return <span className="payment-status payment-pending">⏳ Processing</span>;
+      case 'Failed':
+        return <span className="payment-status payment-failed">✗ Failed</span>;
+      case 'Refunded':
+        return <span className="payment-status payment-refunded">↩ Refunded</span>;
+      default:
+        return null;
     }
   };
 
   return (
     <div className="reservations-page">
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
+      {success && <Toast message={success} type="success" onClose={() => setSuccess(null)} />}
 
       <div className="reservations-container">
         <div className="reservations-header">
@@ -153,6 +204,17 @@ export const MyReservationsPage: React.FC = () => {
                       ).toFixed(2)}
                     </span>
                   </div>
+                  {payments[reservation.id] && (
+                    <div className="detail-item">
+                      <span className="detail-label">Payment:</span>
+                      <span className="detail-value">
+                        {getPaymentStatusBadge(payments[reservation.id].status)}
+                        {payments[reservation.id].status === 'Refunded' && payments[reservation.id].amount && (
+                          <span className="refund-amount"> €{payments[reservation.id].amount.toFixed(2)}</span>
+                        )}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {reservation.status === 'Pending' && (
@@ -160,6 +222,19 @@ export const MyReservationsPage: React.FC = () => {
                     <p className="payment-notice">⚠️ Payment required to confirm this booking</p>
                     <Button onClick={() => handlePayNow(reservation)} fullWidth>
                       Pay Now
+                    </Button>
+                  </div>
+                )}
+
+                {(reservation.status === 'Confirmed' || reservation.status === 'Pending') && (
+                  <div className="reservation-actions">
+                    <Button 
+                      onClick={() => handleCancelReservation(reservation.id)} 
+                      variant="secondary"
+                      fullWidth
+                      disabled={cancellingId === reservation.id}
+                    >
+                      {cancellingId === reservation.id ? 'Cancelling...' : 'Cancel & Request Refund'}
                     </Button>
                   </div>
                 )}

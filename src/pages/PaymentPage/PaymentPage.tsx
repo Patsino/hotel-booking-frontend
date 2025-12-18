@@ -27,7 +27,7 @@ export const PaymentPage: React.FC = () => {
   const startDate = state?.startDate;
   const endDate = state?.endDate;
 
-  const [paymentMethodId, setPaymentMethodId] = useState('pm_test_card_visa');
+  const [paymentMethodId, setPaymentMethodId] = useState('pm_card_visa');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -123,7 +123,7 @@ export const PaymentPage: React.FC = () => {
                 label="Payment Method ID (Test)"
                 value={paymentMethodId}
                 onChange={(e) => setPaymentMethodId(e.target.value)}
-                placeholder="pm_test_card_visa"
+                placeholder="pm_card_visa"
                 fullWidth
               />
 
@@ -133,14 +133,14 @@ export const PaymentPage: React.FC = () => {
                   <button
                     type="button"
                     className="test-card-btn"
-                    onClick={() => setPaymentMethodId('pm_test_card_visa')}
+                    onClick={() => setPaymentMethodId('pm_card_visa')}
                   >
                     💳 Visa
                   </button>
                   <button
                     type="button"
                     className="test-card-btn"
-                    onClick={() => setPaymentMethodId('pm_test_card_mastercard')}
+                    onClick={() => setPaymentMethodId('pm_card_mastercard')}
                   >
                     💳 Mastercard
                   </button>

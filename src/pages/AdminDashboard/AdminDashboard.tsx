@@ -240,9 +240,9 @@ export const AdminDashboard: React.FC = () => {
                   >
                     <option value="">All Status</option>
                     <option value="Pending">Pending</option>
+                    <option value="Held">Held</option>
                     <option value="Confirmed">Confirmed</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Completed">Completed</option>
+                    <option value="Canceled">Canceled</option>
                   </select>
                   <select
                     value={cancellationFilter}
@@ -252,8 +252,9 @@ export const AdminDashboard: React.FC = () => {
                     <option value="">All Cancellations</option>
                     <option value="None">None</option>
                     <option value="Requested">Requested</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="AutoCanceled">Auto-Canceled</option>
+                    <option value="AdminApproved">Admin Approved</option>
+                    <option value="AdminRejected">Admin Rejected</option>
                   </select>
                   <Button onClick={fetchReservations}>Apply Filters</Button>
                 </div>

@@ -1,5 +1,5 @@
 import { paymentsApi } from './api';
-import type { CreatePaymentIntentData, PaymentIntentResponse } from '../types';
+import type { CreatePaymentIntentData, PaymentIntentResponse, Payment } from '../types';
 
 export const paymentService = {
   createPaymentIntent: async (data: CreatePaymentIntentData): Promise<PaymentIntentResponse> => {
@@ -15,5 +15,14 @@ export const paymentService = {
       paymentIntentId,
       paymentMethodId,
     });
+  },
+
+  getPaymentByReservation: async (reservationId: number): Promise<Payment | null> => {
+    try {
+      const response = await paymentsApi.get<Payment[]>(`/api/payments/reservation/${reservationId}`);
+      return response.data && response.data.length > 0 ? response.data[0] : null;
+    } catch (error) {
+      return null;
+    }
   },
 };
