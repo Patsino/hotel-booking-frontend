@@ -9,6 +9,7 @@ import { BookingPage } from './pages/BookingPage/BookingPage';
 import { MyReservationsPage } from './pages/MyReservationsPage/MyReservationsPage';
 import { ProfilePage } from './pages/ProfilePage/ProfilePage';
 import { PaymentPage } from './pages/PaymentPage/PaymentPage';
+import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -67,6 +68,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PaymentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
                 </ProtectedRoute>
               }
             />

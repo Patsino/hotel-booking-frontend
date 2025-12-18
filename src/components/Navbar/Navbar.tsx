@@ -32,6 +32,11 @@ export const Navbar: React.FC = () => {
               <Link to="/profile" className="nav-link">
                 Profile
               </Link>
+              {role === 'Admin' && (
+                <Link to="/admin" className="nav-link nav-link-admin">
+                  🛡️ Admin Panel
+                </Link>
+              )}
               <div className="nav-user">
                 <span className="user-email">{email}</span>
                 <span className="user-role">{role}</span>

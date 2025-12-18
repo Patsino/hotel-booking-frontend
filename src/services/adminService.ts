@@ -1,0 +1,52 @@
+import { hotelsApi, reservationsApi, paymentsApi } from './api';
+
+export const adminService = {
+  // Hotels Admin
+  getPendingHotels: async () => {
+    const response = await hotelsApi.get('/api/admin/hotels/pending');
+    return response.data;
+  },
+
+  getAllHotels: async (status?: string) => {
+    const params = status ? { status } : undefined;
+    const response = await hotelsApi.get('/api/admin/hotels/all', { params });
+    return response.data;
+  },
+
+  approveHotel: async (hotelId: number) => {
+    const response = await hotelsApi.post(`/api/admin/hotels/${hotelId}/approve`);
+    return response.data;
+  },
+
+  rejectHotel: async (hotelId: number) => {
+    const response = await hotelsApi.post(`/api/admin/hotels/${hotelId}/reject`);
+    return response.data;
+  },
+
+  // Reservations Admin
+  getAllReservations: async (status?: string, cancellationStatus?: string) => {
+    const params: any = {};
+    if (status) params.status = status;
+    if (cancellationStatus) params.cancellationStatus = cancellationStatus;
+    const response = await reservationsApi.get('/api/admin/reservations', { params });
+    return response.data;
+  },
+
+  approveCancellation: async (reservationId: number) => {
+    await reservationsApi.post(`/api/admin/reservations/${reservationId}/approve-cancellation`);
+  },
+
+  rejectCancellation: async (reservationId: number) => {
+    await reservationsApi.post(`/api/admin/reservations/${reservationId}/reject-cancellation`);
+  },
+
+  // Payments Admin
+  refundPayment: async (paymentId: number, amount: number | null, reason: string) => {
+    const response = await paymentsApi.post('/api/payments/refund', {
+      paymentId,
+      amount,
+      reason,
+    });
+    return response.data;
+  },
+};

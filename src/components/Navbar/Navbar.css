@@ -46,6 +46,20 @@
   color: #2563eb;
 }
 
+.nav-link-admin {
+  background-color: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link-admin:hover {
+  background-color: #b91c1c;
+  color: white;
+}
+
 .nav-link-primary {
   background-color: #2563eb;
   color: white;
