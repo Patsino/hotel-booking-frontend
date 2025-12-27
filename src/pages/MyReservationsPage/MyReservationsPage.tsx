@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { reservationService } from '../../services/reservationService';
 import { paymentService } from '../../services/paymentService';
+import { hotelService } from '../../services/hotelService';
 import { getErrorMessage } from '../../services/api';
 import type { Reservation, Payment } from '../../types';
 import { Card } from '../../components/Card/Card';
@@ -51,21 +52,41 @@ export const MyReservationsPage: React.FC = () => {
     fetchReservations();
   }, [isAuthenticated]);
 
-  const handlePayNow = (reservation: Reservation) => {
+  const handlePayNow = async (reservation: Reservation) => {
     console.log('Navigate to payment for reservation:', reservation);
     
-    // Calculate estimated total based on dates (default price per night: 100)
-    const nights = differenceInDays(new Date(reservation.endDate), new Date(reservation.startDate));
-    const totalAmount = 100 * nights; // Default to 100 per night as estimate
+    // Check if we already have payment info with the correct amount
+    const existingPayment = payments[reservation.id];
+    if (existingPayment && existingPayment.amount > 0) {
+      navigate('/payment', {
+        state: {
+          reservationId: reservation.id,
+          amount: existingPayment.amount,
+          startDate: reservation.startDate,
+          endDate: reservation.endDate,
+        },
+      });
+      return;
+    }
     
-    navigate('/payment', {
-      state: {
-        reservationId: reservation.id,
-        amount: totalAmount,
-        startDate: reservation.startDate,
-        endDate: reservation.endDate,
-      },
-    });
+    // Fetch room details to get the actual price
+    try {
+      const room = await hotelService.getRoomById(reservation.roomId);
+      const nights = Math.max(1, differenceInDays(new Date(reservation.endDate), new Date(reservation.startDate)));
+      const totalAmount = room.pricePerNight * nights;
+      
+      navigate('/payment', {
+        state: {
+          reservationId: reservation.id,
+          amount: totalAmount,
+          startDate: reservation.startDate,
+          endDate: reservation.endDate,
+        },
+      });
+    } catch (err) {
+      console.error('Error fetching room details:', err);
+      setError('Failed to get room pricing. Please try again.');
+    }
   };
 
   const handleCancelReservation = async (reservationId: number) => {
@@ -111,6 +132,10 @@ export const MyReservationsPage: React.FC = () => {
         return 'status-held';
       case 'Canceled':
         return 'status-canceled';
+      case 'CancellationRequested':
+        return 'status-cancellation-requested';
+      case 'CancellationRejected':
+        return 'status-cancellation-rejected';
       default:
         return '';
     }
@@ -159,8 +184,14 @@ export const MyReservationsPage: React.FC = () => {
               <Card key={reservation.id} className="reservation-card">
                 <div className="reservation-header">
                   <h3 className="reservation-id">Reservation #{reservation.id}</h3>
-                  <span className={`status-badge ${getStatusBadgeClass(reservation.status)}`}>
-                    {reservation.status}
+                  <span className={`status-badge ${getStatusBadgeClass(
+                    reservation.cancellationStatus === 'Requested' ? 'CancellationRequested' :
+                    reservation.cancellationStatus === 'AdminRejected' ? 'CancellationRejected' :
+                    reservation.status
+                  )}`}>
+                    {reservation.cancellationStatus === 'Requested' ? 'Cancellation Requested' :
+                     reservation.cancellationStatus === 'AdminRejected' ? 'Cancellation Rejected' :
+                     reservation.status}
                   </span>
                 </div>
 
@@ -196,12 +227,13 @@ export const MyReservationsPage: React.FC = () => {
                     </span>
                   </div>
                   <div className="detail-item total-price">
-                    <span className="detail-label">Total Price (est.):</span>
+                    <span className="detail-label">Total Price:</span>
                     <span className="detail-value">
-                      €{(
-                        100 * 
-                        differenceInDays(new Date(reservation.endDate), new Date(reservation.startDate))
-                      ).toFixed(2)}
+                      {payments[reservation.id] ? (
+                        <>€{payments[reservation.id].amount.toFixed(2)}</>
+                      ) : (
+                        <span className="price-pending">Pending payment</span>
+                      )}
                     </span>
                   </div>
                   {payments[reservation.id] && (

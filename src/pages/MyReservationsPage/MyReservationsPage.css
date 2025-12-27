@@ -99,6 +99,21 @@
   color: #991b1b;
 }
 
+.status-cancellation-requested {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-cancellation-rejected {
+  background-color: #fce7f3;
+  color: #9d174d;
+}
+
+.price-pending {
+  color: #6b7280;
+  font-style: italic;
+}
+
 .reservation-details {
   display: flex;
   flex-direction: column;

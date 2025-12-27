@@ -10,6 +10,9 @@ import { MyReservationsPage } from './pages/MyReservationsPage/MyReservationsPag
 import { ProfilePage } from './pages/ProfilePage/ProfilePage';
 import { PaymentPage } from './pages/PaymentPage/PaymentPage';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
+import { MyHotelsPage } from './pages/MyHotelsPage/MyHotelsPage';
+import { CreateHotelPage } from './pages/CreateHotelPage/CreateHotelPage';
+import { CreateRoomPage } from './pages/CreateRoomPage/CreateRoomPage';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -76,6 +79,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-hotels"
+              element={
+                <ProtectedRoute>
+                  <MyHotelsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-hotel"
+              element={
+                <ProtectedRoute>
+                  <CreateHotelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-room"
+              element={
+                <ProtectedRoute>
+                  <CreateRoomPage />
                 </ProtectedRoute>
               }
             />

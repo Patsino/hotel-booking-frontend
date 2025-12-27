@@ -33,7 +33,7 @@ export const BookingPage: React.FC = () => {
     );
   }
 
-  const nights = differenceInDays(new Date(endDate), new Date(startDate));
+  const nights = Math.max(1, differenceInDays(new Date(endDate), new Date(startDate)));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

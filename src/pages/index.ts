@@ -4,3 +4,6 @@ export { RegisterPage } from './RegisterPage/RegisterPage';
 export { HotelSearchPage } from './HotelSearchPage/HotelSearchPage';
 export { BookingPage } from './BookingPage/BookingPage';
 export { MyReservationsPage } from './MyReservationsPage/MyReservationsPage';
+export { MyHotelsPage } from './MyHotelsPage/MyHotelsPage';
+export { CreateHotelPage } from './CreateHotelPage/CreateHotelPage';
+export { CreateRoomPage } from './CreateRoomPage/CreateRoomPage';

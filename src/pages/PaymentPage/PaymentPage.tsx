@@ -50,7 +50,7 @@ export const PaymentPage: React.FC = () => {
     );
   }
 
-  const nights = startDate && endDate ? differenceInDays(new Date(endDate), new Date(startDate)) : 0;
+  const nights = startDate && endDate ? Math.max(1, differenceInDays(new Date(endDate), new Date(startDate))) : 1;
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
