@@ -92,7 +92,7 @@ export const CreateHotelPage: React.FC = () => {
                 label="Country"
                 value={formData.country}
                 onChange={(e) => handleChange('country', e.target.value)}
-                placeholder="Latvia"
+                placeholder="Lithuania"
                 required
                 fullWidth
               />
@@ -100,7 +100,7 @@ export const CreateHotelPage: React.FC = () => {
                 label="City"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
-                placeholder="Riga"
+                placeholder="Vilnius"
                 required
                 fullWidth
               />

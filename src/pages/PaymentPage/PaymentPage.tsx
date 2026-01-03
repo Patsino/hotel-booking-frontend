@@ -120,7 +120,7 @@ export const PaymentPage: React.FC = () => {
               </div>
 
               <Input
-                label="Payment Method ID (Test)"
+                label="Payment Method"
                 value={paymentMethodId}
                 onChange={(e) => setPaymentMethodId(e.target.value)}
                 placeholder="pm_card_visa"

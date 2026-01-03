@@ -63,7 +63,7 @@ export const HotelSearchPage: React.FC = () => {
     }
 
     if (!searchParams.startDate || !searchParams.endDate) {
-      setError('Please select check-in and check-out dates');
+      setError('Please select check-in and check-out dates in the search form before booking');
       return;
     }
 
@@ -103,13 +103,13 @@ export const HotelSearchPage: React.FC = () => {
                 label="Country"
                 value={searchParams.country}
                 onChange={(e) => setSearchParams({ ...searchParams, country: e.target.value })}
-                placeholder="e.g., Latvia"
+                placeholder="e.g., Lithuania"
               />
               <Input
                 label="City"
                 value={searchParams.city}
                 onChange={(e) => setSearchParams({ ...searchParams, city: e.target.value })}
-                placeholder="e.g., Riga"
+                placeholder="e.g., Vilnius"
               />
             </div>
 
