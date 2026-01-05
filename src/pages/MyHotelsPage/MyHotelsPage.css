@@ -203,10 +203,99 @@
 }
 
 .no-hotels,
-.no-rooms {
+.no-rooms,
+.no-reservations {
   text-align: center;
   color: var(--text-secondary, #666);
   padding: 1rem 0;
+}
+
+/* Reservations Section */
+.reservations-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.reservations-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--text-color, #333);
+}
+
+.reservations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reservation-item {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.reservation-room {
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-confirmed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-canceled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.reservation-dates {
+  font-size: 0.9rem;
+  color: var(--text-color, #333);
+  margin-bottom: 0.35rem;
+}
+
+.reservation-guests {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.35rem;
+}
+
+.reservation-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #999);
+  display: flex;
+  gap: 1rem;
+}
+
+.reservation-cancellation {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #e5e7eb;
+  font-size: 0.8rem;
+  color: #b45309;
 }
 
 @media (max-width: 600px) {

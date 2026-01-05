@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { hotelService } from '../../services/hotelService';
 import { getErrorMessage } from '../../services/api';
-import type { Hotel, Room } from '../../types';
+import type { Hotel, Room, HotelReservation } from '../../types';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Loading } from '../../components/Loading/Loading';
@@ -15,8 +15,11 @@ export const MyHotelsPage: React.FC = () => {
   const navigate = useNavigate();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [hotelRooms, setHotelRooms] = useState<Record<number, Room[]>>({});
+  const [hotelReservations, setHotelReservations] = useState<Record<number, HotelReservation[]>>({});
   const [expandedHotel, setExpandedHotel] = useState<number | null>(null);
+  const [expandedReservations, setExpandedReservations] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reservationsLoading, setReservationsLoading] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchHotels = async () => {
@@ -43,6 +46,38 @@ export const MyHotelsPage: React.FC = () => {
       setExpandedHotel(hotelId);
     } catch (err) {
       setError(getErrorMessage(err));
+    }
+  };
+
+  const fetchReservations = async (hotelId: number) => {
+    if (hotelReservations[hotelId]) {
+      setExpandedReservations(expandedReservations === hotelId ? null : hotelId);
+      return;
+    }
+
+    setReservationsLoading(hotelId);
+    try {
+      const reservations = await hotelService.getHotelReservations(hotelId);
+      setHotelReservations(prev => ({ ...prev, [hotelId]: reservations }));
+      setExpandedReservations(hotelId);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setReservationsLoading(null);
+    }
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'Confirmed':
+        return 'status-confirmed';
+      case 'Pending':
+      case 'Held':
+        return 'status-pending';
+      case 'Canceled':
+        return 'status-canceled';
+      default:
+        return '';
     }
   };
 
@@ -133,6 +168,17 @@ export const MyHotelsPage: React.FC = () => {
                     {expandedHotel === hotel.id ? 'Hide Rooms' : 'View Rooms'}
                   </Button>
                   <Button 
+                    variant="secondary"
+                    onClick={() => fetchReservations(hotel.id)}
+                    disabled={reservationsLoading === hotel.id}
+                  >
+                    {reservationsLoading === hotel.id 
+                      ? 'Loading...' 
+                      : expandedReservations === hotel.id 
+                        ? 'Hide Reservations' 
+                        : '📋 View Reservations'}
+                  </Button>
+                  <Button 
                     onClick={() => navigate('/create-room', { state: { hotelId: hotel.id, hotelName: hotel.name } })}
                     disabled={hotel.approval !== 'Approved'}
                   >
@@ -161,6 +207,45 @@ export const MyHotelsPage: React.FC = () => {
                             </p>
                             <p className="room-price">€{room.pricePerNight}/night</p>
                             {room.petsAllowed && <span className="pet-badge">🐾 Pets OK</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {expandedReservations === hotel.id && hotelReservations[hotel.id] && (
+                  <div className="reservations-section">
+                    <h4>📋 Reservations ({hotelReservations[hotel.id].length})</h4>
+                    {hotelReservations[hotel.id].length === 0 ? (
+                      <p className="no-reservations">No reservations yet.</p>
+                    ) : (
+                      <div className="reservations-list">
+                        {hotelReservations[hotel.id].map((reservation) => (
+                          <div key={reservation.id} className="reservation-item">
+                            <div className="reservation-header">
+                              <span className="reservation-room">Room {reservation.roomNumber}</span>
+                              <span className={`status-badge ${getStatusBadgeClass(reservation.status)}`}>
+                                {reservation.status}
+                              </span>
+                            </div>
+                            <div className="reservation-dates">
+                              📅 {new Date(reservation.startDate).toLocaleDateString()} — {new Date(reservation.endDate).toLocaleDateString()}
+                            </div>
+                            <div className="reservation-guests">
+                              👥 {reservation.guestsCount} guest(s)
+                              {reservation.guestsNames && `: ${reservation.guestsNames}`}
+                            </div>
+                            <div className="reservation-meta">
+                              <span>ID: #{reservation.id}</span>
+                              <span>User: #{reservation.userId}</span>
+                            </div>
+                            {reservation.cancellationStatus !== 'None' && (
+                              <div className="reservation-cancellation">
+                                ⚠️ Cancellation: {reservation.cancellationStatus}
+                                {reservation.cancellationReason && ` - ${reservation.cancellationReason}`}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

@@ -92,6 +92,22 @@ export interface Reservation {
   createdAt: string;
 }
 
+export interface HotelReservation {
+  id: number;
+  userId: number;
+  roomId: number;
+  roomNumber: string;
+  startDate: string;
+  endDate: string;
+  guestsCount: number;
+  guestsNames: string;
+  status: 'Pending' | 'Held' | 'Confirmed' | 'Canceled';
+  cancellationStatus: 'None' | 'Requested' | 'AutoCanceled' | 'AdminApproved' | 'AdminRejected';
+  cancellationReason: string | null;
+  cancellationRequestedAt: string | null;
+  createdAt: string;
+}
+
 export interface Payment {
   id: number;
   reservationId: number;

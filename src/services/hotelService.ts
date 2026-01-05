@@ -1,5 +1,5 @@
 import { hotelsApi } from './api';
-import type { Hotel, Room, HotelSearchParams, HotelSearchResult } from '../types';
+import type { Hotel, Room, HotelSearchParams, HotelSearchResult, HotelReservation } from '../types';
 
 export const hotelService = {
   searchHotels: async (params: HotelSearchParams): Promise<HotelSearchResult[]> => {
@@ -14,6 +14,11 @@ export const hotelService = {
 
   getMyHotels: async (): Promise<Hotel[]> => {
     const response = await hotelsApi.get<Hotel[]>('/api/hotels/mine');
+    return response.data;
+  },
+
+  getHotelReservations: async (hotelId: number): Promise<HotelReservation[]> => {
+    const response = await hotelsApi.get<HotelReservation[]>(`/api/hotels/${hotelId}/reservations`);
     return response.data;
   },
 
