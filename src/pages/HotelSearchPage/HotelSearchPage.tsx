@@ -190,6 +190,37 @@ export const HotelSearchPage: React.FC = () => {
               />
             </div>
 
+            <div className="search-form-checkboxes">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  className="checkbox-input"
+                  checked={searchParams.withPets || false}
+                  onChange={(e) =>
+                    setSearchParams({
+                      ...searchParams,
+                      withPets: e.target.checked || undefined,
+                    })
+                  }
+                />
+                <span>🐾 Pet Friendly</span>
+              </label>
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  className="checkbox-input"
+                  checked={searchParams.isPetHotelOnly || false}
+                  onChange={(e) =>
+                    setSearchParams({
+                      ...searchParams,
+                      isPetHotelOnly: e.target.checked || undefined,
+                    })
+                  }
+                />
+                <span>🏨 Pet Hotel Only</span>
+              </label>
+            </div>
+
             <Button type="submit" loading={loading} fullWidth>
               Search Hotels
             </Button>
