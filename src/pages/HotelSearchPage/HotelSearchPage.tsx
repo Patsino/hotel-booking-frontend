@@ -139,6 +139,29 @@ export const HotelSearchPage: React.FC = () => {
                   setSearchParams({ ...searchParams, guestsCount: Number(e.target.value) })
                 }
               />
+              <div className="input-wrapper">
+                <label className="input-label">Accommodation</label>
+                <select
+                  className="input-field"
+                  value={searchParams.accommodation || ''}
+                  onChange={(e) =>
+                    setSearchParams({
+                      ...searchParams,
+                      accommodation: e.target.value || undefined,
+                    })
+                  }
+                >
+                  <option value="">Any</option>
+                  <option value="HotelRoom">Hotel Room</option>
+                  <option value="Apartment">Apartment</option>
+                  <option value="House">House</option>
+                  <option value="Cabin">Cabin</option>
+                  <option value="Capsule">Capsule</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="search-form-row">
               <Input
                 label="Min Price (€)"
                 type="number"

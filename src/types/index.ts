@@ -49,7 +49,7 @@ export interface Room {
   pricePerNight: number;
   visible: boolean;
   petsAllowed: boolean;
-  accommodation: 'HotelRoom' | 'Apartment' | 'Villa' | 'Bungalow' | 'Studio' | 'Suite' | 'Dormitory';
+  accommodation: 'HotelRoom' | 'Apartment' | 'House' | 'Cabin' | 'Capsule';
   createdAt: string;
 }
 
