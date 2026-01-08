@@ -1,6 +1,33 @@
-import { hotelsApi, reservationsApi, paymentsApi } from './api';
+import { hotelsApi, reservationsApi, paymentsApi, usersApi } from './api';
 
 export const adminService = {
+  // Users Admin
+  getAllUsers: async (email?: string, role?: string, isDeleted?: boolean) => {
+    const params: Record<string, string | boolean> = {};
+    if (email) params.email = email;
+    if (role) params.role = role;
+    if (isDeleted !== undefined) params.isDeleted = isDeleted;
+    const response = await usersApi.get('/api/users', { params });
+    return response.data;
+  },
+
+  getUserById: async (userId: number) => {
+    const response = await usersApi.get(`/api/users/${userId}`);
+    return response.data;
+  },
+
+  updateUserRole: async (userId: number, role: string) => {
+    await usersApi.patch(`/api/users/${userId}/role`, { role });
+  },
+
+  softDeleteUser: async (userId: number) => {
+    await usersApi.post(`/api/users/${userId}/soft-delete`);
+  },
+
+  restoreUser: async (userId: number) => {
+    await usersApi.post(`/api/users/${userId}/restore`);
+  },
+
   // Hotels Admin
   getPendingHotels: async () => {
     const response = await hotelsApi.get('/api/admin/hotels/pending');

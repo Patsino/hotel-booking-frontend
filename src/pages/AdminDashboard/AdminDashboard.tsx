@@ -30,12 +30,23 @@ type AdminReservation = {
   endDate: string;
   status: string;
   cancellationStatus: string;
+  cancellationReason: string | null;
+  cancellationRequestedAt: string | null;
+  createdAt: string;
+};
+
+type AdminUser = {
+  id: number;
+  email: string;
+  role: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
   createdAt: string;
 };
 
 export const AdminDashboard: React.FC = () => {
-  const { role } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'hotels' | 'reservations'>('hotels');
+  const { role, userId } = useAuthStore();
+  const [activeTab, setActiveTab] = useState<'hotels' | 'reservations' | 'users'>('hotels');
   
   // Hotels state
   const [hotels, setHotels] = useState<AdminHotel[]>([]);
@@ -48,6 +59,13 @@ export const AdminDashboard: React.FC = () => {
   const [cancellationFilter, setCancellationFilter] = useState<string>('');
   const [reservationsLoading, setReservationsLoading] = useState(false);
   
+  // Users state
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [userEmailFilter, setUserEmailFilter] = useState<string>('');
+  const [userRoleFilter, setUserRoleFilter] = useState<string>('');
+  const [userDeletedFilter, setUserDeletedFilter] = useState<string>('');
+  const [usersLoading, setUsersLoading] = useState(false);
+  
   // Common state
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -55,8 +73,10 @@ export const AdminDashboard: React.FC = () => {
   useEffect(() => {
     if (activeTab === 'hotels') {
       fetchHotels();
-    } else {
+    } else if (activeTab === 'reservations') {
       fetchReservations();
+    } else if (activeTab === 'users') {
+      fetchUsers();
     }
   }, [activeTab]);
 
@@ -84,6 +104,23 @@ export const AdminDashboard: React.FC = () => {
       setError(getErrorMessage(err));
     } finally {
       setReservationsLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    setUsersLoading(true);
+    try {
+      const isDeletedParam = userDeletedFilter === '' ? undefined : userDeletedFilter === 'true';
+      const data = await adminService.getAllUsers(
+        userEmailFilter || undefined,
+        userRoleFilter || undefined,
+        isDeletedParam
+      );
+      setUsers(data);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setUsersLoading(false);
     }
   };
 
@@ -127,6 +164,40 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleUpdateUserRole = async (targetUserId: number, newRole: string) => {
+    try {
+      await adminService.updateUserRole(targetUserId, newRole);
+      setSuccess(`User role updated to ${newRole}`);
+      fetchUsers();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  const handleSoftDeleteUser = async (targetUserId: number) => {
+    if (targetUserId === userId) {
+      setError('You cannot delete your own account from the admin panel');
+      return;
+    }
+    try {
+      await adminService.softDeleteUser(targetUserId);
+      setSuccess('User soft-deleted successfully');
+      fetchUsers();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  const handleRestoreUser = async (targetUserId: number) => {
+    try {
+      await adminService.restoreUser(targetUserId);
+      setSuccess('User restored successfully');
+      fetchUsers();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
   if (role !== 'Admin') {
     return (
       <div className="admin-dashboard">
@@ -158,6 +229,12 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('reservations')}
           >
             Reservation Management
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            User Management
           </button>
         </div>
 
@@ -290,6 +367,12 @@ export const AdminDashboard: React.FC = () => {
                       <p><strong>Check-in:</strong> {format(new Date(reservation.startDate), 'PP')}</p>
                       <p><strong>Check-out:</strong> {format(new Date(reservation.endDate), 'PP')}</p>
                       <p><strong>Created:</strong> {format(new Date(reservation.createdAt), 'PPp')}</p>
+                      {reservation.cancellationReason && (
+                        <p><strong>Cancellation Reason:</strong> {reservation.cancellationReason}</p>
+                      )}
+                      {reservation.cancellationRequestedAt && (
+                        <p><strong>Cancellation Requested:</strong> {format(new Date(reservation.cancellationRequestedAt), 'PPp')}</p>
+                      )}
                     </div>
                     {reservation.cancellationStatus === 'Requested' && (
                       <div className="admin-card-actions">
@@ -301,6 +384,106 @@ export const AdminDashboard: React.FC = () => {
                         </Button>
                       </div>
                     )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className="admin-section">
+            <Card>
+              <div className="filter-section">
+                <h3>Filter Users</h3>
+                <div className="filter-controls">
+                  <input
+                    type="text"
+                    value={userEmailFilter}
+                    onChange={(e) => setUserEmailFilter(e.target.value)}
+                    placeholder="Search by email..."
+                    className="filter-input"
+                  />
+                  <select
+                    value={userRoleFilter}
+                    onChange={(e) => setUserRoleFilter(e.target.value)}
+                    className="filter-select"
+                  >
+                    <option value="">All Roles</option>
+                    <option value="User">User</option>
+                    <option value="HotelOwner">Hotel Owner</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                  <select
+                    value={userDeletedFilter}
+                    onChange={(e) => setUserDeletedFilter(e.target.value)}
+                    className="filter-select"
+                  >
+                    <option value="">All Users</option>
+                    <option value="false">Active</option>
+                    <option value="true">Deleted</option>
+                  </select>
+                  <Button onClick={fetchUsers}>Apply Filters</Button>
+                </div>
+              </div>
+            </Card>
+
+            {usersLoading ? (
+              <Loading />
+            ) : users.length === 0 ? (
+              <Card>
+                <p className="no-data">No users found</p>
+              </Card>
+            ) : (
+              <div className="admin-grid">
+                {users.map((user) => (
+                  <Card key={user.id} className="admin-card">
+                    <div className="admin-card-header">
+                      <h3>User #{user.id}</h3>
+                      <div className="status-badges">
+                        <span className={`status-badge status-role-${user.role.toLowerCase()}`}>
+                          {user.role}
+                        </span>
+                        {user.isDeleted && (
+                          <span className="status-badge status-deleted">
+                            Deleted
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="admin-card-body">
+                      <p><strong>Email:</strong> {user.email}</p>
+                      <p><strong>Created:</strong> {format(new Date(user.createdAt), 'PPp')}</p>
+                      {user.deletedAt && (
+                        <p><strong>Deleted:</strong> {format(new Date(user.deletedAt), 'PPp')}</p>
+                      )}
+                    </div>
+                    <div className="admin-card-actions user-actions">
+                      {!user.isDeleted && user.id !== userId && (
+                        <>
+                          <select
+                            className="role-select"
+                            defaultValue={user.role}
+                            onChange={(e) => handleUpdateUserRole(user.id, e.target.value)}
+                          >
+                            <option value="User">User</option>
+                            <option value="HotelOwner">Hotel Owner</option>
+                            <option value="Admin">Admin</option>
+                          </select>
+                          <Button onClick={() => handleSoftDeleteUser(user.id)} variant="secondary">
+                            🗑️ Delete
+                          </Button>
+                        </>
+                      )}
+                      {user.isDeleted && (
+                        <Button onClick={() => handleRestoreUser(user.id)} variant="primary">
+                          ↩️ Restore
+                        </Button>
+                      )}
+                      {user.id === userId && (
+                        <span className="current-user-badge">This is you</span>
+                      )}
+                    </div>
                   </Card>
                 ))}
               </div>

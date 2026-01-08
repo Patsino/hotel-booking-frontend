@@ -97,11 +97,7 @@ The application will be available at `http://localhost:5173`
 npm run build
 ```
 
-## Linting
 
-```bash
-npm run lint
-```
 
 ## Project Requirements Compliance
 
