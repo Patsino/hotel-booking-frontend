@@ -54,6 +54,7 @@
   border-radius: 8px;
   font-size: 1rem;
   background-color: white;
+  color: var(--text-color, #333);
   cursor: pointer;
 }
 
